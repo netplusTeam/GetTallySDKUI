@@ -1,0 +1,22 @@
+<resources>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="tokenize_cards">TOKENIZE CARDS</string>
+    <string name="enter_card_details">ENTER CARD DETAILS</string>
+    <string name="your_card_details_is_never_stored">Your Card Details is Never Stored</string>
+    <string name="card_number">Card Number</string>
+    <string name="enter_card_number">Enter card number</string>
+    <string name="expire_date">Expire Date</string>
+    <string name="mm">MM</string>
+    <string name="cvv">CVV</string>
+    <string name="generate_qr">GENERATE QR</string>
+    <string name="input_card_pin">Input Card Pin</string>
+    <string name="proceed">Proceed</string>
+    <string name="save_qr_on_device">Save qr on device</string>
+    <string name="cravings_fast_food">Cravings fast food</string>
+    <string name="_50_0000">50,0000</string>
+    <string name="_12_11_2024">12-11-2024</string>
+    <string name="you_have_no_recent_tokenized_card">You have no recent tokenized card</string>
+    <string name="you_no_available_tokenized_card_s">You no available tokenized card(s)</string>
+    <string name="you_have_no_available_transaction">You have no available transaction</string>
+</resources>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="tab_text_selected_color">#9B6545</color>
+    <color name="tab_text_not_selected_color">#E5E2E6</color>
+    <color name="black_color">#070707</color>
+    <color name="purple_color">#e65a28</color>
+    <color name="light_purple_color">#F6EAE6</color>
+</resources>
