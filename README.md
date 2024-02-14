@@ -1,60 +1,63 @@
-## Getting started
+**Getting Started with Tally SDK: A Guide for Businesses and Developers**
 
-## Adding dependency: Add this dependency into your project build.gradle file
+### **Introduction to Tally SDK: Revolutionizing Financial Transactions in Your App**
 
-```gradle
-dependencies {
-    implementation 'com.github.netplusTeam:GetTallySDK:1.0.3'
-}
-```
-While this is optional, it is recommended you update your compile and kotlin options to
-```kotlin
-compileOptions {
-    sourceCompatibility JavaVersion.VERSION_17
-    targetCompatibility JavaVersion.VERSION_17
-}
+In today's fast-paced digital world, financial transactions and data management require not only robust security but also seamless integration and user-friendly features. The Tally SDK is designed to cater to these needs, offering a suite of features that enhance your app's financial capabilities. This guide introduces the key features of Tally SDK, demonstrating how it can transform the way your app handles financial transactions and data.
 
-kotlinOptions {
-    jvmTarget = '17'
-}
-```
-Once your project is syncronized, clean and rebuild to ensure everything is stable.
+### Key Features of Tally SDK
 
-## Manifest: Add these to your manifest file(only if they don't already exisit)
+1. **Card Tokenization**: At the heart of secure financial transactions is card tokenization. This feature converts sensitive card information into a secure and encrypted token. This means that actual card details are never stored or transmitted in a way that could be exploited, significantly reducing the risk of fraud.
 
-```xml
-<uses-permission android:name="android.permission.INTERNET" />
-<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-```
-### Usage: To use the Tally SDK, simply add this to your button click listener or your desired view click listener
+2. **View the Latest Tokenized Card**: Users can easily access and view the most recently tokenized card, making it convenient to manage and use their preferred payment method without navigating through their entire card portfolio.
+
+3. **View All Tokenized Cards**: For users with multiple tokenized cards, this feature provides a comprehensive overview of all their cards in one place. It simplifies card management and enhances user experience by offering easy access to their entire tokenized card list.
+
+4. **Save QR Code Image to User's Device Gallery**: This innovative feature allows users to save the QR code of their tokenized card directly to their device's gallery. It's a convenient way to store and retrieve QR codes for payments and transactions without the need for a physical card.
+
+5. **View Transactions from a Single QR (Token)**: Users can view the transaction history associated with a specific QR code or token. This targeted insight into transactions offers a clear and detailed view of spending patterns and transaction details for individual tokens.
+
+6. **View Transaction History from All Tokenized Cards**: For a broader overview, this feature allows users to access the transaction history across all their tokenized cards. It's an essential tool for tracking spending, managing finances, and reviewing transaction details across multiple cards.
+
+7. **View All Merchants and Location on Google Maps**: Enhancing the user experience further, this feature integrates with Google Maps to display merchants and their locations. Users can easily find where their transactions are happening, discover new merchants, and plan their visits accordingly.
+
+### Step 1: Setting Up
+To get started, you need to add the Tally SDK to your project. This involves a simple modification to your project's build configuration.
+
+- **Add the SDK**: Insert a line in your project's `build.gradle` file under dependencies:
+  ```groovy
+  implementation 'com.github.netplusTeam:GetTallySDK:1.0.3'
+  ```
+- **Update Java and Kotlin Compatibility** (Recommended but optional): To ensure the best performance and compatibility, update your project to use Java Version 17 and set the Kotlin target to the same. This might involve adjusting your compile options.
+
+### Step 2: Configuring Your App
+Your app needs the right permissions to make full use of Tally SDK's capabilities. This includes access to the internet, network state, location, and external storage. Add the necessary permissions to your `AndroidManifest.xml` file, only if they're not already present.
+
+### Step 3: Using the SDK
+Integrating Tally SDK into your app's functionality is straightforward. For example, you can add it to a button in your app. When the user clicks this button, the SDK's user interface (UI) will launch, allowing them to interact with financial features securely. Here’s a simple setup to get you started:
 
 ```kotlin
 myButton.setOnClickListener{
-    val email = "test@gmail.com"
-    val password = "test1234"
-    val intent = TallyActivity.getIntent(this, email, password)
+    val intent = TallyActivity.getIntent(this, "test@gmail.com", "password", "fullName", "bankName", "phoneNumber", "userId")
     startActivity(intent)
 }
 ```
-Once this code above is added pass the reqiured parameters as requested from the SDK, for test purposes, we'll be using email and password. This code above launches the Tall SDK UI, which is overlayed on the app, from there users can interact.
+Replace the parameters with the necessary credentials. This action opens the Tally SDK UI, ready for user interaction.
 
-### Card tokenization
-When users input and tokenize their card information, the SDK provides you(the financial institution) access token an encrypted version of the card imformation in a String format. This encrypted information is stored crypotographically in the AndroidKey Store. To lean more about AndroidKey Store [Visit Android official documentation](https://developer.android.com/privacy-and-security/keystore). 
-The SDK already handles all the complex tasks, so you need not to worry. Just add these lines or codes below and you're good to go. The SDK already handles encrypting and storing the cryptographic data.
+### Card Tokenization
+The Tally SDK offers a secure way to handle card information through tokenization. This process converts sensitive card details into a secure token, minimizing the risk of exposing actual card information.
 
-### To READ the cryptographic information, add this line of code
-```kotlin
- val tokenizedCardsData = TallSecurityUtil.retrieveData(this)
-```
-This line of code above reads from the AndroidKeyStore and returns all saved cryptographic data, decrypts it and returns the actual value to you.
+- **Storing and Encrypting Card Data**: The SDK takes care of encrypting card information and storing it securely, leveraging Android's cryptographic storage solutions. You don't need to manage the complexities of encryption. To learn more about Android Keystore system visit [https://developer.android.com/privacy-and-security/keystore]
+  
+- **Reading Encrypted Data**: To access the stored and encrypted card information, use:
+  ```kotlin
+  val tokenizedCardsData = TallSecurityUtil.retrieveData(this)
+  ```
+  This command retrieves and decrypts the data for you.
 
-### To DELETE the cryptographic information, add this line of code
-```kotlin
-TallSecurityUtil.deleteAllData(this)
-```
+- **Deleting Information**: If you need to clear stored data, simply call:
+  ```kotlin
+  TallSecurityUtil.deleteAllData(this)
+  ```
 
-
-### That's all you need to do.
+### Conclusion
+Integrating Tally SDK into your app not only enhances its financial capabilities but does so with an emphasis on security and ease of use. By following the steps outlined above, developers and business stakeholders alike can ensure a smooth implementation process, bringing sophisticated financial transaction features to your users with minimal hassle. Whether you’re enhancing an existing application or building a new one, Tally SDK provides the tools you need to succeed.
