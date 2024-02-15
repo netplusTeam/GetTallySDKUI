@@ -11,7 +11,11 @@ class MainActivity : AppCompatActivity() {
 
         val email = "nicholasanyanwu125@gmail.com"
         val password = "nicholasanyanwu125@gmail.com"
-        val intent = TallyActivity.getIntent(this, email, password)
+        val fullName = "Anyanwu Nicholas"
+        val bankName = "Wema"
+        val phoneNumber = "09090909090"
+        val userId = "28"
+        val intent = TallyActivity.getIntent(this, email, password, fullName, bankName, phoneNumber, userId)
         startActivity(intent)
     }
 }

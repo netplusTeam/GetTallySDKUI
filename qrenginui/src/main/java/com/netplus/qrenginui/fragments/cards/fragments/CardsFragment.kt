@@ -16,10 +16,13 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.netplus.qrengine.backendRemote.model.keys.get.GetFinancialInstitutionKeyResponse
 import com.netplus.qrengine.backendRemote.model.qr.EncryptedQrModel
 import com.netplus.qrengine.backendRemote.model.qr.GenerateQrcodeResponse
 import com.netplus.qrengine.backendRemote.model.qr.store.StoreTokenizedCardsResponse
+import com.netplus.qrengine.utils.GET_PARTNER_KEYS
 import com.netplus.qrengine.utils.TallSecurityUtil
+import com.netplus.qrengine.utils.TallyAppPreferences
 import com.netplus.qrengine.utils.TallyQrcodeGenerator
 import com.netplus.qrengine.utils.TallyResponseCallback
 import com.netplus.qrengine.utils.encryptBase64
@@ -155,30 +158,41 @@ class CardsFragment : Fragment() {
         expiryMonth: Int,
         expiryYear: Int,
     ) {
+        val finUserId = TallyAppPreferences.getInstance(requireContext())
+            .getStringValue(TallyAppPreferences.USER_ID).toString().toInt()
+        val finUserEmail = TallyAppPreferences.getInstance(requireContext())
+            .getStringValue(TallyAppPreferences.EMAIL)
+        val finUserFullName = TallyAppPreferences.getInstance(requireContext())
+            .getStringValue(TallyAppPreferences.FULL_NAME)
+        val bankName = TallyAppPreferences.getInstance(requireContext())
+            .getStringValue(TallyAppPreferences.BANK_NAME)
+        val phoneNumber = TallyAppPreferences.getInstance(requireContext())
+            .getStringValue(TallyAppPreferences.PHONE_NUMBER)
+
         val cardType = getCardType(inputtedCardNumber)
         if (isValidExpiryDate(expiryMonth, expiryYear)) {
             if (isValidCardNumber(inputtedCardNumber, cardType)) {
                 when (cardType) {
                     listOfCardSchemes[0] -> {
                         //Visa
-                        userId = 12
-                        email = "nicholasanyanwu125@gmail.com"
-                        fullName = "Nicholas"
-                        issuingBank = "Wema"
-                        mobilePhone = "09090909090"
-                        appCode = "Tall"
+                        userId = finUserId
+                        email = finUserEmail
+                        fullName = finUserFullName
+                        issuingBank = bankName
+                        mobilePhone = phoneNumber
+                        appCode = "Tally"
                         cardScheme = cardType
                         openBottomSheet()
                     }
 
                     listOfCardSchemes[1] -> {
                         //MasterCard
-                        userId = 12
-                        email = "nicholasanyanwu125@gmail.com"
-                        fullName = "Nicholas"
-                        issuingBank = "Access Bank"
-                        mobilePhone = "09090909090"
-                        appCode = "Tall"
+                        userId = finUserId
+                        email = finUserEmail
+                        fullName = finUserFullName
+                        issuingBank = bankName
+                        mobilePhone = phoneNumber
+                        appCode = "Tally"
                         cardScheme = cardType
                         generateQrcode(isPinInputted = false)
                     }
@@ -193,12 +207,12 @@ class CardsFragment : Fragment() {
 
                     listOfCardSchemes[4] -> {
                         //Verve
-                        userId = 12
-                        email = "nicholasanyanwu125@gmail.com"
-                        fullName = "Nicholas"
-                        issuingBank = "GTCO"
-                        mobilePhone = "09090909090"
-                        appCode = "Tall"
+                        userId = finUserId
+                        email = finUserEmail
+                        fullName = finUserFullName
+                        issuingBank = bankName
+                        mobilePhone = phoneNumber
+                        appCode = "Tally"
                         cardScheme = cardType
                         openBottomSheet()
                     }
@@ -236,7 +250,6 @@ class CardsFragment : Fragment() {
                     //storeTokenizedCard(data)
                     encryptQrToken(data)
                     hideBottomSheet()
-                    clearForm()
                 }
 
                 override fun failed(message: String?) {
@@ -272,9 +285,8 @@ class CardsFragment : Fragment() {
     }
 
     private fun encryptQrToken(data: GenerateQrcodeResponse?) {
+        //val partnerId = TallyAppPreferences.getInstance(requireContext()).getStringValue(TallyAppPreferences.PARTNER_ID)
         if (data != null) {
-            Toast.makeText(requireContext(), "Card tokenization complete", Toast.LENGTH_SHORT)
-                .show()
             val encryptedQrModel = EncryptedQrModel(
                 qrcodeId = data.qr_code_id,
                 image = encryptBase64(data.data.toString(), data.qr_code_id.toString()),
@@ -284,6 +296,7 @@ class CardsFragment : Fragment() {
                 date = data.date
             )
             progressDialogUtil.dismissProgressDialog()
+            clearForm()
             TallSecurityUtil.storeData(requireContext(), encryptedQrModel)
             val intent = Intent("swipeAction").apply {
                 putExtra("generateQrcodeResponse", data)

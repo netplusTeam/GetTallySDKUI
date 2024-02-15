@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.netplus.qrengine.backendRemote.model.transactions.updatedTransaction.UpdatedTransactionResponse
 import com.netplus.qrengine.utils.TallSecurityUtil
+import com.netplus.qrengine.utils.TallyAppPreferences
 import com.netplus.qrengine.utils.TallyQrcodeGenerator
 import com.netplus.qrengine.utils.TallyResponseCallback
 import com.netplus.qrengine.utils.gone
@@ -50,6 +51,10 @@ class TokenizedCardsTransactionFragment : Fragment() {
     }
 
     private fun observer() {
+        val partnerId = TallyAppPreferences.getInstance(requireContext()).getStringValue(
+            TallyAppPreferences.PARTNER_ID)
+        val bankName = TallyAppPreferences.getInstance(requireContext()).getStringValue(
+            TallyAppPreferences.BANK_NAME)
         val tokenizedCardsData = TallSecurityUtil.retrieveData(requireContext())
         progressDialogUtil.showProgressDialog("Loading...")
         val qr_code_ids = listOf(

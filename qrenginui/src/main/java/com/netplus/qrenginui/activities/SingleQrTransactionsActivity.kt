@@ -54,6 +54,7 @@ class SingleQrTransactionsActivity : AppCompatActivity(), SingleQrTransactionAda
 
     private fun observer() {
         progressDialogUtil.showProgressDialog("Loading...")
+        //TODO: use [qrcodeId]
         val qr_code_ids = listOf("8a17cd9f-1946-4418-8453-23318d95e01c")
         tallyQrcodeGenerator.getTransactions(
             qr_code_ids,
