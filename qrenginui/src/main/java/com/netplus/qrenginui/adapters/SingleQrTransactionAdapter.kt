@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.netplus.qrengine.backendRemote.model.transactions.updatedTransaction.Row
 import com.netplus.qrengine.utils.convertDateToReadableFormat
 import com.netplus.qrengine.utils.toDecimalFormat
+import com.netplus.qrengine.utils.visible
 import com.netplus.qrenginui.R
 
 class SingleQrTransactionAdapter(
@@ -39,11 +40,23 @@ class SingleQrTransactionAdapter(
         private val merchantName = itemView.findViewById<TextView>(R.id.merchant_name)
         private val transactionAmount = itemView.findViewById<TextView>(R.id.transaction_amount)
         private val transactionDate = itemView.findViewById<TextView>(R.id.transaction_date)
+        private val transactionStatus = itemView.findViewById<TextView>(R.id.transaction_status)
+        private val transactionReference =
+            itemView.findViewById<TextView>(R.id.transaction_reference)
+        private val agentName = itemView.findViewById<TextView>(R.id.agent_name)
 
         fun bind(transaction: Row) {
             merchantName.text = transaction.merchantName
             transactionAmount.text = transaction.amount.toString().toDecimalFormat(true)
             transactionDate.text = convertDateToReadableFormat(transaction.dateCreated)
+
+            transactionReference.visible()
+            transactionStatus.visible()
+            agentName.visible()
+
+            transactionStatus.text = transaction.responseMessage
+            transactionReference.text = transaction.rrn
+            agentName.text = transaction.agentName
         }
     }
 

@@ -19,4 +19,5 @@
     <string name="you_have_no_recent_tokenized_card">You have no recent tokenized card</string>
     <string name="you_no_available_tokenized_card_s">You no available tokenized card(s)</string>
     <string name="you_have_no_available_transaction">You have no available transaction</string>
+    <string name="you_no_available_merchant_s">You no available merchant(s)</string>
 </resources>

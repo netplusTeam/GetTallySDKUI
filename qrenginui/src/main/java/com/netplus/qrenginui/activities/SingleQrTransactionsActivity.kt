@@ -1,9 +1,7 @@
 package com.netplus.qrenginui.activities
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.LinearLayout
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -12,6 +10,7 @@ import com.netplus.qrengine.backendRemote.model.transactions.updatedTransaction.
 import com.netplus.qrengine.utils.TallyQrcodeGenerator
 import com.netplus.qrengine.utils.TallyResponseCallback
 import com.netplus.qrengine.utils.gone
+import com.netplus.qrengine.utils.showSnackbar
 import com.netplus.qrengine.utils.visible
 import com.netplus.qrenginui.R
 import com.netplus.qrenginui.adapters.SingleQrTransactionAdapter
@@ -54,8 +53,7 @@ class SingleQrTransactionsActivity : AppCompatActivity(), SingleQrTransactionAda
 
     private fun observer() {
         progressDialogUtil.showProgressDialog("Loading...")
-        //TODO: use [qrcodeId]
-        val qr_code_ids = listOf("8a17cd9f-1946-4418-8453-23318d95e01c")
+        val qr_code_ids = listOf(qrcodeId)
         tallyQrcodeGenerator.getTransactions(
             qr_code_ids,
             2,
@@ -63,8 +61,8 @@ class SingleQrTransactionsActivity : AppCompatActivity(), SingleQrTransactionAda
             object : TallyResponseCallback<UpdatedTransactionResponse> {
                 override fun success(data: UpdatedTransactionResponse?) {
                     progressDialogUtil.dismissProgressDialog()
-                    Log.e("TAG", "success: $data")
                     if (data?.data?.rows.isNullOrEmpty()) {
+                        showSnackbar(message = "No transactions available")
                         switchViewVisibility(true)
                     } else {
                         switchViewVisibility(false)
@@ -78,8 +76,7 @@ class SingleQrTransactionsActivity : AppCompatActivity(), SingleQrTransactionAda
 
                 override fun failed(message: String?) {
                     progressDialogUtil.dismissProgressDialog()
-                    Toast.makeText(this@SingleQrTransactionsActivity, message, Toast.LENGTH_SHORT)
-                        .show()
+                    showSnackbar(message = message.toString())
                 }
             })
     }

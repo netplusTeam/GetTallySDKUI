@@ -5,11 +5,9 @@ import android.preference.PreferenceManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import android.widget.Toast
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.netplus.qrengine.backendRemote.model.merchants.AllMerchantResponse
 import com.netplus.qrengine.backendRemote.model.merchants.Merchant
 import com.netplus.qrengine.utils.MERCHANTS_BASE_URL
@@ -17,9 +15,11 @@ import com.netplus.qrengine.utils.TOKEN
 import com.netplus.qrengine.utils.TallyQrcodeGenerator
 import com.netplus.qrengine.utils.TallyResponseCallback
 import com.netplus.qrengine.utils.gone
+import com.netplus.qrengine.utils.showSnackbar
 import com.netplus.qrengine.utils.visible
 import com.netplus.qrenginui.R
 import com.netplus.qrenginui.adapters.AllMerchantAdapter
+import com.netplus.qrenginui.databinding.TallyMerchantBinding
 import com.netplus.qrenginui.utils.ProgressDialogUtil
 import org.osmdroid.config.Configuration
 import org.osmdroid.util.GeoPoint
@@ -28,25 +28,21 @@ import org.osmdroid.views.overlay.Marker
 
 class TallyMerchantsFragment : Fragment(), AllMerchantAdapter.Interaction {
 
-    private lateinit var recyclerView: RecyclerView
+    private lateinit var binding: TallyMerchantBinding
     private lateinit var allMerchantAdapter: AllMerchantAdapter
     private val tallyQrcodeGenerator = TallyQrcodeGenerator()
-    private lateinit var qrInfoLayout: LinearLayout
     private val progressDialogUtil by lazy { ProgressDialogUtil(requireContext()) }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
-        val rootView = inflater.inflate(R.layout.fragment_tally_merchants, container, false)
-
-        recyclerView = rootView.findViewById(R.id.merchant_recycler)
-        qrInfoLayout = rootView.findViewById(R.id.merchant_info_layout)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_tally_merchants, container, false)
 
         initView()
 
-        return rootView
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -60,7 +56,7 @@ class TallyMerchantsFragment : Fragment(), AllMerchantAdapter.Interaction {
     }
 
     private fun initView() {
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.merchantRecycler.layoutManager = LinearLayoutManager(requireContext())
     }
 
     override fun onResume() {
@@ -86,13 +82,14 @@ class TallyMerchantsFragment : Fragment(), AllMerchantAdapter.Interaction {
                             this@TallyMerchantsFragment,
                             data?.data ?: emptyList()
                         )
-                        recyclerView.adapter = allMerchantAdapter
+                        binding.merchantRecycler.adapter = allMerchantAdapter
                     }
                 }
 
                 override fun failed(message: String?) {
                     progressDialogUtil.dismissProgressDialog()
-                    Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+                    switchViewVisibility(isListEmpty = true)
+                    requireContext().showSnackbar(message = "An error occurred")
                 }
             }
         )
@@ -118,11 +115,11 @@ class TallyMerchantsFragment : Fragment(), AllMerchantAdapter.Interaction {
 
     private fun switchViewVisibility(isListEmpty: Boolean) {
         if (isListEmpty) {
-            recyclerView.gone()
-            qrInfoLayout.visible()
+            binding.merchantRecycler.gone()
+            binding.merchantInfoLayout.visible()
         } else {
-            recyclerView.visible()
-            qrInfoLayout.gone()
+            binding.merchantRecycler.visible()
+            binding.merchantInfoLayout.gone()
         }
     }
 

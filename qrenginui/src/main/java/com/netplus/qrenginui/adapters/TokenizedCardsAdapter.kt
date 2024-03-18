@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.widget.AppCompatButton
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
@@ -16,6 +15,7 @@ import com.netplus.qrengine.utils.decodeBase64ToBitmap
 import com.netplus.qrengine.utils.decryptBase64
 import com.netplus.qrengine.utils.gone
 import com.netplus.qrengine.utils.saveImageToGallery
+import com.netplus.qrengine.utils.showSnackbar
 import com.netplus.qrengine.utils.visible
 import com.netplus.qrenginui.R
 
@@ -94,7 +94,7 @@ class TokenizedCardsAdapter(
 
             saveQrIcon.setOnClickListener {
                 saveImageToGallery(itemView.context, tokenizedCardImage)
-                Toast.makeText(itemView.context, "Saved successfully", Toast.LENGTH_SHORT).show()
+                itemView.context.showSnackbar(message = "Saved successfully")
             }
 
             viewTransactions.setOnClickListener {

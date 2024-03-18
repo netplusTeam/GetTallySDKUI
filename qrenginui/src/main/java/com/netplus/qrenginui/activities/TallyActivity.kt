@@ -17,13 +17,14 @@ import com.netplus.qrengine.utils.TOKEN
 import com.netplus.qrengine.utils.TallyAppPreferences
 import com.netplus.qrengine.utils.TallyQrcodeGenerator
 import com.netplus.qrengine.utils.TallyResponseCallback
+import com.netplus.qrengine.utils.showSnackbar
 import com.netplus.qrenginui.R
-import com.netplus.qrenginui.utils.ProgressDialogUtil
 import com.netplus.qrenginui.adapters.TabPagerAdapter
 import com.netplus.qrenginui.fragments.AllTokenizedCardsFragment
 import com.netplus.qrenginui.fragments.CardTokenizationFragment
 import com.netplus.qrenginui.fragments.TallyMerchantsFragment
 import com.netplus.qrenginui.fragments.TokenizedCardsTransactionFragment
+import com.netplus.qrenginui.utils.ProgressDialogUtil
 import com.netplus.qrenginui.utils.generateRandomString
 
 class TallyActivity : AppCompatActivity() {
@@ -43,9 +44,9 @@ class TallyActivity : AppCompatActivity() {
 
         fun getIntent(
             context: Context,
-            email: String?,
+            email: String,
             password: String?,
-            fullName: String?,
+            fullName: String,
             bankName: String?,
             phoneNumber: String?,
             userId: String?
@@ -79,9 +80,10 @@ class TallyActivity : AppCompatActivity() {
             setStringValue(TallyAppPreferences.EMAIL, email)
         }
         //authenticateBank(email, password)
-        val isFirstTimeLaunch = TallyAppPreferences.getInstance(this).getBooleanValue(TallyAppPreferences.IS_APP_FIRST_LAUNCHED)
+        val isFirstTimeLaunch = TallyAppPreferences.getInstance(this)
+            .getBooleanValue(TallyAppPreferences.IS_APP_FIRST_LAUNCHED)
         if (!isFirstTimeLaunch) {
-            storePartnerInfo(bankName)
+            //storePartnerInfo(bankName)
         }
 
         tabPager = findViewById(R.id.viewPager)
@@ -111,8 +113,8 @@ class TallyActivity : AppCompatActivity() {
         val tabTitles = ArrayList<String>().apply {
             add("Cards")
             add("Tokenized Cards")
-            add("All Transactions")
-            add("All Merchants")
+            add("Transactions")
+            add("Merchants")
         }
 
         tabLayout.tabMode = TabLayout.MODE_SCROLLABLE
@@ -132,11 +134,7 @@ class TallyActivity : AppCompatActivity() {
             password = password,
             object : TallyResponseCallback<LoginResponse> {
                 override fun success(data: LoginResponse?) {
-                    Toast.makeText(
-                        this@TallyActivity,
-                        "Authentication Successful",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    showSnackbar(message = "Authentication Successful")
                     progressDialogUtil.dismissProgressDialog()
                 }
 
@@ -168,10 +166,10 @@ class TallyActivity : AppCompatActivity() {
                 }
 
                 override fun success(data: FinancialInstitutionKeyResponse?) {
-                    TallyAppPreferences.getInstance(this@TallyActivity).setBooleanValue(TallyAppPreferences.IS_APP_FIRST_LAUNCHED, true)
+                    TallyAppPreferences.getInstance(this@TallyActivity)
+                        .setBooleanValue(TallyAppPreferences.IS_APP_FIRST_LAUNCHED, true)
                     progressDialogUtil.dismissProgressDialog()
-                    Toast.makeText(this@TallyActivity, "Setup successful", Toast.LENGTH_SHORT)
-                        .show()
+                    showSnackbar(message = "Setup successful")
                     TallyAppPreferences.getInstance(this@TallyActivity)
                         .setStringValue(TallyAppPreferences.PARTNER_ID, partnerId)
                 }

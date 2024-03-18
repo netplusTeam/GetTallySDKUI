@@ -6,11 +6,11 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
+import android.view.ViewTreeObserver
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.netplus.qrengine.backendRemote.model.qr.EncryptedQrModel
 import com.netplus.qrengine.utils.TallSecurityUtil
 import com.netplus.qrengine.utils.TallyAppPreferences
@@ -19,30 +19,31 @@ import com.netplus.qrengine.utils.visible
 import com.netplus.qrenginui.R
 import com.netplus.qrenginui.activities.SingleQrTransactionsActivity
 import com.netplus.qrenginui.adapters.TokenizedCardsAdapter
+import com.netplus.qrenginui.databinding.AllTokenizedCardsBinding
 import com.netplus.qrenginui.utils.ProgressDialogUtil
 import com.netplus.qrenginui.utils.launchActivityWithExtra
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class AllTokenizedCardsFragment : Fragment(), TokenizedCardsAdapter.Interaction {
 
-    private lateinit var recyclerView: RecyclerView
+    private lateinit var binding: AllTokenizedCardsBinding
     private lateinit var tokenizedCardsAdapter: TokenizedCardsAdapter
-    private lateinit var qrInfoLayout: LinearLayout
     private val progressDialogUtil by lazy { ProgressDialogUtil(requireContext()) }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
-        val rootView = inflater.inflate(R.layout.fragment_all_tokenized_cards, container, false)
+        binding = DataBindingUtil.inflate(
+            inflater,
+            R.layout.fragment_all_tokenized_cards,
+            container,
+            false
+        )
 
-        initViews(rootView)
-
-        return rootView
+        return binding.root
     }
 
     override fun onResume() {
@@ -50,37 +51,45 @@ class AllTokenizedCardsFragment : Fragment(), TokenizedCardsAdapter.Interaction 
         initRecycler()
     }
 
-    private fun initViews(rootView: View) {
-        recyclerView = rootView.findViewById(R.id.tokenized_cards_recycle)
-        qrInfoLayout = rootView.findViewById(R.id.token_info_layout)
-    }
-
     private fun initRecycler() {
+        val partnerId = TallyAppPreferences.getInstance(requireContext())
+            .getStringValue(TallyAppPreferences.PARTNER_ID)
+        progressDialogUtil.showProgressDialog("Loading...")
         Handler(Looper.getMainLooper()).postDelayed({
-            progressDialogUtil.showProgressDialog("Loading...")
             viewLifecycleOwner.lifecycleScope.launch {
                 val tokenizedCardsData = withContext(Dispatchers.IO) {
-                    TallSecurityUtil.retrieveData(requireContext())
+                    TallSecurityUtil.retrieveData(requireContext(), "Tally")
                 }
 
                 if (tokenizedCardsData?.isEmpty() == true) {
                     switchViewVisibility(true)
                 } else {
                     switchViewVisibility(false)
+                    binding.tokenizedCardsRecycle.layoutManager =
+                        LinearLayoutManager(requireContext())
+                    tokenizedCardsAdapter = TokenizedCardsAdapter(
+                        this@AllTokenizedCardsFragment,
+                        tokenizedCardsData ?: emptyList()
+                    )
+                    binding.tokenizedCardsRecycle.adapter = tokenizedCardsAdapter
+
+                    binding.tokenizedCardsRecycle.viewTreeObserver.addOnGlobalLayoutListener(object :
+                        ViewTreeObserver.OnGlobalLayoutListener {
+                        override fun onGlobalLayout() {
+                            // At this point, the RecyclerView is displayed on the UI
+                            // Do something here
+                            progressDialogUtil.dismissProgressDialog()
+
+                            // Don't forget to remove the listener to prevent being called multiple times
+                            binding.tokenizedCardsRecycle.viewTreeObserver.removeOnGlobalLayoutListener(
+                                this
+                            )
+                        }
+                    })
                 }
-
-                recyclerView.layoutManager = LinearLayoutManager(requireContext())
-                tokenizedCardsAdapter = TokenizedCardsAdapter(
-                    this@AllTokenizedCardsFragment,
-                    tokenizedCardsData ?: emptyList()
-                )
-                recyclerView.adapter = tokenizedCardsAdapter
-
-                progressDialogUtil.dismissProgressDialog()
             }
-        }, 2000)
+        }, 1000)
     }
-
 
     override fun onItemSelected(
         absoluteAdapterPosition: Int,
@@ -94,11 +103,11 @@ class AllTokenizedCardsFragment : Fragment(), TokenizedCardsAdapter.Interaction 
 
     private fun switchViewVisibility(isListEmpty: Boolean) {
         if (isListEmpty) {
-            recyclerView.gone()
-            qrInfoLayout.visible()
+            binding.tokenizedCardsRecycle.gone()
+            binding.tokenInfoLayout.visible()
         } else {
-            qrInfoLayout.gone()
-            recyclerView.visible()
+            binding.tokenInfoLayout.gone()
+            binding.tokenizedCardsRecycle.visible()
         }
     }
 
