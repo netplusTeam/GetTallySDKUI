@@ -52,7 +52,7 @@ class TokenizedCardsTransactionFragment : Fragment() {
         val bankName = TallyAppPreferences.getInstance(requireContext()).getStringValue(
             TallyAppPreferences.BANK_NAME)*/
 
-        val tokenizedCardsData = TallSecurityUtil.retrieveData(requireContext(), "Tally")
+        val tokenizedCardsData = TallSecurityUtil.retrieveData(requireContext())
         progressDialogUtil.showProgressDialog("Loading...")
         val qr_code_ids = extractQrCodeIds(tokenizedCardsData ?: emptyList())
         Log.e("QR", "Data: $qr_code_ids")

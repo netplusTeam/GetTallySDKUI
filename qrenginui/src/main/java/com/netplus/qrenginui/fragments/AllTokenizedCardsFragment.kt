@@ -58,7 +58,7 @@ class AllTokenizedCardsFragment : Fragment(), TokenizedCardsAdapter.Interaction 
         Handler(Looper.getMainLooper()).postDelayed({
             viewLifecycleOwner.lifecycleScope.launch {
                 val tokenizedCardsData = withContext(Dispatchers.IO) {
-                    TallSecurityUtil.retrieveData(requireContext(), "Tally")
+                    TallSecurityUtil.retrieveData(requireContext())
                 }
 
                 if (tokenizedCardsData?.isEmpty() == true) {

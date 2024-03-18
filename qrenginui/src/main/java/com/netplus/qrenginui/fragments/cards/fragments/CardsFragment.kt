@@ -499,7 +499,7 @@ class CardsFragment : Fragment() {
                 issuingBank = data.issuing_bank,
                 date = data.date
             )
-            TallSecurityUtil.storeData(requireContext(), encryptedQrModel, "Tally")
+            TallSecurityUtil.storeData(requireContext(), encryptedQrModel)
             Handler(Looper.getMainLooper()).postDelayed({
                 clearForm()
                 progressDialogUtil.dismissProgressDialog()
@@ -542,7 +542,6 @@ class CardsFragment : Fragment() {
                     TallSecurityUtil.storeData(
                         requireContext(),
                         encryptedQrModel,
-                        data?.data?.secret.toString()
                     )
                     val intent = Intent("swipeAction").apply {
                         putExtra("generateQrcodeResponse", qrResponse)
