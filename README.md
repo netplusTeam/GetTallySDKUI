@@ -25,7 +25,7 @@ To get started, you need to add the Tally SDK to your project. This involves a s
 
 - **Add the SDK**: Insert a line in your project's `build.gradle` file under dependencies:
   ```groovy
-  implementation 'com.github.netplusTeam:GetTallySDK:1.0.3'
+   implementation 'com.github.netplusTeam:GetTallySDKUI:v0.9.0-beta'
   ```
 - **Update Java and Kotlin Compatibility** (Recommended but optional): To ensure the best performance and compatibility, update your project to use Java Version 17 and set the Kotlin target to the same. This might involve adjusting your compile options.
 
@@ -37,8 +37,8 @@ Integrating Tally SDK into your app's functionality is straightforward. For exam
 
 ```kotlin
 myButton.setOnClickListener{
-    val intent = TallyActivity.getIntent(this, "test@gmail.com", "password", "fullName", "bankName", "phoneNumber", "userId")
-    startActivity(intent)
+   val intent = TallyActivity.getIntent(this, email, password, fullName, bankName, phoneNumber, userId)
+   startActivity(intent)
 }
 ```
 Replace the parameters with the necessary credentials. This action opens the Tally SDK UI, ready for user interaction.
