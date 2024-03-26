@@ -127,14 +127,25 @@ class CardsFragment : Fragment() {
 
         binding.generateQrButton.setOnClickListener {
             val inputtedCardNumber = binding.etCardNumber.text.toString().replace(" - ", "")
-            val expiryMonth = binding.etMm.text.toString().toIntOrNull() ?: 0
-            val expiryYear = binding.etYy.text.toString().toIntOrNull() ?: 0
-            //val cardCvvString = cardCvv.text.toString()
-            validateCardInformation(
-                inputtedCardNumber,
-                expiryMonth,
-                expiryYear
-            )
+            val expiryMonth = binding.etMm.text.toString().toInt()
+            val expiryYear = binding.etYy.text.toString().toInt()
+            val cardCvvString = binding.etCvv.text.toString()
+            if (inputtedCardNumber.isEmpty()) {
+                binding.etCardNumber.error = "Card number cannot be empty"
+            } else if (binding.etMm.text.toString().isEmpty()) {
+                binding.etMm.error = "Expiry month cannot be empty"
+            } else if (binding.etYy.text.toString().isEmpty()) {
+                binding.etYy.error = "Expiry date cannot be empty"
+            } else if (binding.etCvv.text.toString().isEmpty()) {
+                binding.etCvv.error = "CVV cannot be empty"
+            } else {
+                validateCardInformation(
+                    inputtedCardNumber,
+                    expiryMonth,
+                    expiryYear,
+                    cardCvvString
+                )
+            }
         }
 
         binding.etCardNumber.addTextChangedListener(object : TextWatcher {
@@ -219,6 +230,7 @@ class CardsFragment : Fragment() {
         inputtedCardNumber: String,
         expiryMonth: Int,
         expiryYear: Int,
+        cardCvvString: String,
     ) {
         val finUserId = TallyAppPreferences.getInstance(requireContext())
             .getStringValue(TallyAppPreferences.USER_ID).toString().toInt()
@@ -232,67 +244,71 @@ class CardsFragment : Fragment() {
             .getStringValue(TallyAppPreferences.PHONE_NUMBER)
 
         val cardType = getCardType(inputtedCardNumber) // returns card scheme
-        if (isValidExpiryDate(expiryMonth, expiryYear)) { //validates card expiry date
-            if (isValidCardNumber(inputtedCardNumber, cardType)) { //validate if PAN is valid
-                when (cardType) {
-                    listOfCardSchemes[0] -> {
-                        //Visa
-                        userId = finUserId
-                        email = finUserEmail
-                        fullName = finUserFullName
-                        issuingBank = bankName
-                        mobilePhone = phoneNumber
-                        appCode = "Tally"
-                        cardScheme = cardType
-                        //openBottomSheet()
-                        performChargeOnCard(
-                            isPinInputted = false,
-                            inputtedCardPin = null
-                        )
-                    }
+        if (cardCvvString.isNotEmpty()) {
+            if (isValidExpiryDate(expiryMonth, expiryYear)) { //validates card expiry date
+                if (isValidCardNumber(inputtedCardNumber, cardType)) { //validate if PAN is valid
+                    when (cardType) {
+                        listOfCardSchemes[0] -> {
+                            //Visa
+                            userId = finUserId
+                            email = finUserEmail
+                            fullName = finUserFullName
+                            issuingBank = bankName
+                            mobilePhone = phoneNumber
+                            appCode = "Tally"
+                            cardScheme = cardType
+                            //openBottomSheet()
+                            performChargeOnCard(
+                                isPinInputted = false,
+                                inputtedCardPin = null
+                            )
+                        }
 
-                    listOfCardSchemes[1] -> {
-                        //MasterCard
-                        userId = finUserId
-                        email = finUserEmail
-                        fullName = finUserFullName
-                        issuingBank = bankName
-                        mobilePhone = phoneNumber
-                        appCode = "Tally"
-                        cardScheme = cardType
-                        performChargeOnCard(
-                            isPinInputted = false,
-                            inputtedCardPin = null
-                        )
-                        //generateQrcode(isPinInputted = false)
-                    }
+                        listOfCardSchemes[1] -> {
+                            //MasterCard
+                            userId = finUserId
+                            email = finUserEmail
+                            fullName = finUserFullName
+                            issuingBank = bankName
+                            mobilePhone = phoneNumber
+                            appCode = "Tally"
+                            cardScheme = cardType
+                            performChargeOnCard(
+                                isPinInputted = false,
+                                inputtedCardPin = null
+                            )
+                            //generateQrcode(isPinInputted = false)
+                        }
 
-                    listOfCardSchemes[2] -> {
-                        //American Express
-                    }
+                        listOfCardSchemes[2] -> {
+                            //American Express
+                        }
 
-                    listOfCardSchemes[3] -> {
-                        //Discover
-                    }
+                        listOfCardSchemes[3] -> {
+                            //Discover
+                        }
 
-                    listOfCardSchemes[4] -> {
-                        //Verve
-                        userId = finUserId
-                        email = finUserEmail
-                        fullName = finUserFullName
-                        issuingBank = bankName
-                        mobilePhone = phoneNumber
-                        appCode = "Tally"
-                        cardScheme = cardType
-                        openBottomSheet()
+                        listOfCardSchemes[4] -> {
+                            //Verve
+                            userId = finUserId
+                            email = finUserEmail
+                            fullName = finUserFullName
+                            issuingBank = bankName
+                            mobilePhone = phoneNumber
+                            appCode = "Tally"
+                            cardScheme = cardType
+                            openBottomSheet()
+                        }
                     }
+                } else {
+                    binding.etCardNumber.error = "Invalid card number"
                 }
             } else {
-                binding.etCardNumber.error = "Invalid card number"
+                binding.etYy.error = "Invalid expiry year"
+                binding.etMm.error = "Invalid expiry month"
             }
         } else {
-            binding.etYy.error = "Invalid date"
-            binding.etMm.error = "Invalid date"
+            binding.etCvv.error = "CVV cannot be empty"
         }
     }
 
@@ -307,7 +323,7 @@ class CardsFragment : Fragment() {
             orderId = generateOrderId(),
             object : TallyResponseCallback<CheckOutResponse> {
                 override fun failed(message: String?) {
-                    progressDialogUtil.showProgressDialog(message.toString())
+                    requireContext().showSnackbar(message = message.toString())
                     Handler(Looper.getMainLooper()).postDelayed({
                         progressDialogUtil.dismissProgressDialog()
                     }, 2000)
@@ -480,7 +496,7 @@ class CardsFragment : Fragment() {
                 }
 
                 override fun failed(message: String?) {
-                    progressDialogUtil.showProgressDialog(message.toString())
+                    requireContext().showSnackbar(message = message.toString())
                     Handler(Looper.getMainLooper()).postDelayed({
                         progressDialogUtil.dismissProgressDialog()
                     }, 2000)
@@ -600,12 +616,18 @@ class CardsFragment : Fragment() {
 
                             "90" -> {
                                 //fail
+                                Handler(Looper.getMainLooper()).postDelayed({
+                                    progressDialogUtil.dismissProgressDialog()
+                                }, 3000)
                                 clearForm()
                                 requireContext().showSnackbar(message = "Unable to charge card, please try again", length = 3000)
                             }
 
                             "80" -> {
                                 //fail
+                                Handler(Looper.getMainLooper()).postDelayed({
+                                    progressDialogUtil.dismissProgressDialog()
+                                }, 3000)
                                 clearForm()
                                 requireContext().showSnackbar(message = "Unable to charge card, please try again", length = 3000)
                             }
@@ -644,6 +666,10 @@ class CardsFragment : Fragment() {
 
         otpBottomSheetBehavior.addBottomSheetCallback(object :
             BottomSheetBehavior.BottomSheetCallback() {
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                binding.bg.visibility = View.VISIBLE
+            }
+
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 when (newState) {
                     BottomSheetBehavior.STATE_COLLAPSED ->  binding.bg.visible()
@@ -653,10 +679,6 @@ class CardsFragment : Fragment() {
                     BottomSheetBehavior.STATE_DRAGGING ->  binding.bg.visible()
                     BottomSheetBehavior.STATE_SETTLING ->  binding.bg.visible()
                 }
-            }
-
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                binding.bg.visible()
             }
         })
     }
