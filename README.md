@@ -25,7 +25,7 @@ To get started, you need to add the Tally SDK to your project. This involves a s
 
 - **Add the SDK**: Insert a line in your project's `build.gradle` file under dependencies:
   ```groovy
-   implementation 'com.github.netplusTeam:GetTallySDKUI:v0.9.0-beta'
+   implementation("com.github.netplusTeam:GetTallySDKUI:v1.2.0-beta")
   ```
 - **Update Java and Kotlin Compatibility** (Recommended but optional): To ensure the best performance and compatibility, update your project to use Java Version 17 and set the Kotlin target to the same. This might involve adjusting your compile options.
 
