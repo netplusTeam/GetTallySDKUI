@@ -76,20 +76,20 @@ class MainActivity: FlutterActivity() {
                 call, result ->
             if (call.method == "startTallyActivity") {
                 val email = call.argument<String>("email")
-                val password = call.argument<String>("password")
                 val fullName = call.argument<String>("fullName")
                 val bankName = call.argument<String>("bankName")
                 val phoneNumber = call.argument<String>("phoneNumber")
                 val userId = call.argument<String>("userId")
+
                 val intent = TallyActivity.getIntent(
                     this,
-                    "test@gmail.com",
-                    "12345678",
-                    "test",
-                    "GTBank",
-                    "0000000000",
-                    "21")
+                    email,
+                    fullName,
+                    bankName,
+                    phoneNumber,
+                    userId)
                 startActivity(intent)
+
                 result.success("Tally Activity Started")
             } else {
                 result.notImplemented()
@@ -97,6 +97,7 @@ class MainActivity: FlutterActivity() {
         }
     }
 }
+
 ````
 In the `Manifest` file add the line of code the `<application/>` 
 ```xml
