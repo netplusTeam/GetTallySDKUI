@@ -59,9 +59,12 @@ The Tally SDK offers a secure way to handle card information through tokenizatio
   TallSecurityUtil.deleteAllData(this)
   ```
 
+
+
+
 ## Flutter Setup
 Open the Android module of the Flutter project and add the Android dependency following the steps above in the `buil.gradle` file.
-In the `MainActivity` class or you can create/put it in your desired class. Follow this code below
+In the `MainActivity` class or you can create/put it in your desired class but make sure it extends `FlutterActivity`. Follow this code below
 
 ```kotlin
 class MainActivity: FlutterActivity() {
