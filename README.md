@@ -25,7 +25,7 @@ To get started, you need to add the Tally SDK to your project. This involves a s
 
 - **Add the SDK**: Insert a line in your project's `build.gradle` file under dependencies:
   ```groovy
-   implementation 'com.github.netplusTeam:GetTallySDKUI:v0.9.0-beta'
+   implementation("com.github.netplusTeam:GetTallySDKUI:v1.2.0-beta")
   ```
 - **Update Java and Kotlin Compatibility** (Recommended but optional): To ensure the best performance and compatibility, update your project to use Java Version 17 and set the Kotlin target to the same. This might involve adjusting your compile options.
 
@@ -59,5 +59,108 @@ The Tally SDK offers a secure way to handle card information through tokenizatio
   TallSecurityUtil.deleteAllData(this)
   ```
 
+
+
+
+## Flutter Setup
+Open the Android module of the Flutter project and add the Android dependency following the steps above in the `buil.gradle` file.
+In the `MainActivity` class or you can create/put it in your desired class but make sure it extends `FlutterActivity`. Follow this code below
+
+```kotlin
+class MainActivity: FlutterActivity() {
+    private val CHANNEL = "com.fundall.gettallysdkui"
+
+    override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
+        super.configureFlutterEngine(flutterEngine)
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler {
+                call, result ->
+            if (call.method == "startTallyActivity") {
+                val email = call.argument<String>("email")
+                val fullName = call.argument<String>("fullName")
+                val bankName = call.argument<String>("bankName")
+                val phoneNumber = call.argument<String>("phoneNumber")
+                val userId = call.argument<String>("userId")
+
+                val intent = TallyActivity.getIntent(
+                    this,
+                    email,
+                    fullName,
+                    bankName,
+                    phoneNumber,
+                    userId)
+                startActivity(intent)
+
+                result.success("Tally Activity Started")
+            } else {
+                result.notImplemented()
+            }
+        }
+    }
+}
+
+````
+In the `Manifest` file add the line of code the `<application/>` 
+```xml
+tools:replace="android:name"
+tools:overrideLibrary="com.netplus.qrenginui"
+```
+
+In your Dart(Flutter), add a Function that calls the Native function. We have created a `Dart` class for this use case. It's a simple screen that shows a button, feel free to use your own custome `UI`
+
+```Dart
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Trigger SDK Example'),
+        ),
+        body: Center(
+          child: SDKTriggerButton(),
+        ),
+      ),
+    );
+  }
+}
+
+class SDKTriggerButton extends StatelessWidget {
+  // Define the method channel
+  static const platform = MethodChannel('com.fundall.gettallysdkui');
+
+  // Function to call the native method
+  Future<void> triggerSdkFunction() async {
+    try {
+      final String result = await platform.invokeMethod('startTallyActivity', {
+        // Pass any required arguments by your native method
+        "email": "email@example.com",
+        "password": "password",
+        "fullName": "John Doe",
+        // Add other parameters as needed
+      });
+      print(result); // Success result from native code
+    } on PlatformException catch (e) {
+      print("Failed to invoke the method: '${e.message}'.");
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () {
+        triggerSdkFunction(); // Call this function when the button is pressed
+      },
+      child: Text('Trigger SDK'),
+    );
+  }
+}
+````
 ### Conclusion
 Integrating Tally SDK into your app not only enhances its financial capabilities but does so with an emphasis on security and ease of use. By following the steps outlined above, developers and business stakeholders alike can ensure a smooth implementation process, bringing sophisticated financial transaction features to your users with minimal hassle. Whether you’re enhancing an existing application or building a new one, Tally SDK provides the tools you need to succeed.
