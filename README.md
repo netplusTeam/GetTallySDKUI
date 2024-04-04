@@ -98,7 +98,7 @@ class MainActivity: FlutterActivity() {
     }
 }
 ````
-In the `Manifest` file add the line of code the `<application>` 
+In the `Manifest` file add the line of code the `<application/>` 
 ```xml
 tools:replace="android:name"
 tools:overrideLibrary="com.netplus.qrenginui"
