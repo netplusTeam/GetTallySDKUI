@@ -36,7 +36,7 @@ class TallyActivity : AppCompatActivity() {
 
     companion object {
         private const val EXTRA_EMAIL = "extra_email"
-        private const val EXTRA_PASSWORD = "extra_password"
+        //private const val EXTRA_PASSWORD = "extra_password"
         private const val EXTRA_FULL_NAME = "extra_full_name"
         private const val EXTRA_BANK_NAME = "extra_bank_name"
         private const val EXTRA_PHONE_NUMBER = "extra_phone_number"
@@ -45,7 +45,7 @@ class TallyActivity : AppCompatActivity() {
         fun getIntent(
             context: Context,
             email: String,
-            password: String?,
+            //password: String?,
             fullName: String,
             bankName: String?,
             phoneNumber: String?,
@@ -53,7 +53,7 @@ class TallyActivity : AppCompatActivity() {
         ): Intent {
             return Intent(context, TallyActivity::class.java).apply {
                 putExtra(EXTRA_EMAIL, email)
-                putExtra(EXTRA_PASSWORD, password)
+                //putExtra(EXTRA_PASSWORD, password)
                 putExtra(EXTRA_FULL_NAME, fullName)
                 putExtra(EXTRA_BANK_NAME, bankName)
                 putExtra(EXTRA_PHONE_NUMBER, phoneNumber)
@@ -67,7 +67,7 @@ class TallyActivity : AppCompatActivity() {
         setContentView(R.layout.activity_tally)
 
         val email = intent.getStringExtra(EXTRA_EMAIL) ?: ""
-        val password = intent.getStringExtra(EXTRA_PASSWORD) ?: ""
+        //val password = intent.getStringExtra(EXTRA_PASSWORD) ?: ""
         val fullName = intent.getStringExtra(EXTRA_FULL_NAME) ?: ""
         val bankName = intent.getStringExtra(EXTRA_BANK_NAME) ?: ""
         val phoneNumber = intent.getStringExtra(EXTRA_PHONE_NUMBER) ?: ""
